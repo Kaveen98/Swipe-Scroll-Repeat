@@ -1,0 +1,2661 @@
+---
+title: 
+author: 
+date: 
+output: html_document
+---
+
+<style>
+  body {
+    border: 2px solid black;
+    padding: 10px;
+    margin: 30px;
+  }
+</style>
+
+<div>
+<center> <img src="NSBM-LOGO.png" width="250" height="250"> </center>
+</div>
+
+<div style="margin-left: 50px; margin-right: 50px;">
+<div style="text-align: center;">
+
+# **Swipe, Scroll, Repeat:**
+
+### **Behavioral Insights into Social Media Use and Its Addictive Patterns**
+
+</div>
+
+<br><br><br>
+<br><br><br>
+<br><br><br>
+
+
+#### **Group 4**
+
+<table style="width:40%; text-align: left;">
+  <tr>
+    <th>Name</th>
+    <th>Student ID</th>
+  </tr>
+  <tr>
+    <td>I.M.S. Wimalasiri</td>
+    <td>29785</td>
+  </tr>
+  <tr>
+    <td>Y.K.A. Rathnasiri</td>
+    <td>27413</td>
+  </tr>
+  <tr>
+    <td>O.V.D.K.R. Weerasena</td>
+    <td>27986</td>
+  </tr>
+  <tr>
+    <td>S.S.T. Silva</td>
+    <td>30017</td>
+  </tr>
+</table>
+
+</div>
+
+<br>
+
+---
+
+<br>
+
+<div style="margin-left: 50px; margin-right: 50px;">
+
+<div style="text-align: justify;">
+
+## Problem Statement
+
+Social media platforms have become deeply embedded in the daily lives of individuals, particularly among younger generations. While these platforms serve various positive functions such as communication, entertainment, and education, excessive and uncontrolled usage can lead to addictive behaviors, decreased productivity, and negative mental health outcomes. Despite growing awareness, many users underestimate the impact of their social media habits. This study investigates patterns of social media use, focusing on the degree of time-wasting and the prevalence of addiction among users.
+
+---
+
+## Dataset Description
+
+The dataset used for this project is titled **"Time-Wasters & Addiction on Social Media"** and contains **1,000 objects** collected from users across different countries.
+The dataset consists:
+
+- **Demographics**  
+  - `Age`  
+  - `Gender`  
+  - `Location`  
+  - `Profession`  
+
+- **Behavioral Data**  
+  - `Platform` – Primary social media platform used (e.g., TikTok, YouTube)  
+  - `Total Time Spent` – Daily time spent on social media (in minutes)  
+  - `Frequency` – How often participants use social media (e.g., hourly, daily)  
+  - `Number of Videos Watched` – Count of videos consumed per day  
+  - `Video Category` – Type of content viewed (e.g., comedy, education, news)  
+
+- **Device Usage**  
+  - `DeviceType` – Device used for accessing social media (e.g., Mobile, Desktop)  
+  - `Watch Time` – Time of day when social media is used (e.g., Morning, Night)  
+  - `CurrentActivity` – Activity being disrupted or paralleled (e.g., studying, relaxing)  
+
+- **Psychological Indicators**  
+  - `Self Control` – Self-reported control over usage (scale 1–10)  
+  - `Addiction Level` – Measured addiction score (scale 0–7)  
+
+- **Motivational Factors**  
+  - `Watch Reason` – Main motivation for usage (e.g., boredom, habit, entertainment)  
+
+---
+
+## Objective
+
+The primary objective of this project is to analyze social media usage behavior and identify patterns linked to time-wasting and addiction. Using data visualization and statistical techniques in R, the analysis aims to:
+
+- Identify key factors contributing to excessive social media usage
+- Explore the relationship between usage time and addiction levels
+- Understand the impact of social media on productivity and self-control
+- Generate actionable insights and recommendations for healthier usage habits
+
+---
+
+## Research Questions
+
+1. **Which social media platforms are most associated with excessive daily usage?**
+2. **Is there a statistically significant correlation between the time spent on social media and users' self-reported addiction levels?**
+3. **Does age group significantly influence the likelihood of experiencing social media addiction?**
+4. **Has social media usage led to a perceived decrease in productivity or academic performance among users?**
+5. **Can the addiction level be predicted based on time spent and number of platforms used?**
+6. **Does an intervention or increased awareness lead to behavioral changes in usage patterns?**
+
+</div>
+
+</div>
+
+---
+
+<br><br>
+
+## **Data Preparation and Initial Exploration** 
+
+```{r}
+
+# Loading all required libraries.
+
+# Data manipulation and wrangling
+library(tidyverse)     # Includes ggplot2, dplyr, tidyr, etc.
+library(dplyr)         # Data manipulation
+library(tidyr)         # Data reshaping
+library(lubridate)     # Provides intuitive functions that simplify parsing, extracting, manipulating, and analyzing date-time data.
+
+# Visualization
+library(ggplot2)       # Core plotting system
+library(gridExtra)     # Arrange multiple plots in a grid
+library(viridis)       # Color palettes for colorblind-friendly plots
+library(RColorBrewer)  # Additional qualitative and sequential color palettes
+library(scales)        # Axis formatting and scaling
+library(ggalluvial)    # Alluvial/Sankey diagrams
+library(ggridges)      # Ridge density plots
+library(gganimate)     # Animated visualizations
+library(ggcorrplot)    # Correlation matrix visualization
+library(GGally)        # Extended ggplot2 plots (e.g., ggpairs for pair plots)
+library(hrbrthemes)    # Clean and modern themes for ggplot2
+library(ggiraph)       # Interactive ggplot2 graphics
+library(plotly)        # Interactive plots
+library(patchwork)     # Combine multiple ggplot2 plots into a single cohesive layout
+
+# Statistical analysis and diagnostics
+library(corrplot)      # Correlation plots (circle/heatmap style)
+library(car)           # Companion to Applied Regression (e.g., VIF)
+library(lmtest)        # Diagnostic tests for linear models
+library(psych)         # Descriptive statistics and psychometrics
+library(rstatix)       # Easy statistical tests and results formatting
+library(effectsize)    # Effect size calculations
+library(emmeans)       # Estimated marginal means and post-hoc comparisons
+library(moments)       # Skewness, kurtosis, and moment statistics
+library(sandwich)      # Compute robust covariance matrix estimators for linear regression models
+
+# Missing data
+library(naniar)        # Visualization of missing values
+
+# Maps and Geo-Spacial Analysis
+library(maps)          # Map outlines
+library(mapdata)       # Additional map details
+library(rworldmap)     # World mapping tools
+library(treemap)       # Treemap visualizations
+library(networkD3)     # D3.js-based interactive network diagrams
+
+# Country code conversion
+library(countrycode)   # Convert country names to ISO codes
+
+# Radar/fmsb charts
+library(fmsb)          # Radar charts for multivariate data
+
+
+```
+
+```{r}
+df1 <- read_csv("D:/OneDrive - NSBM/NSBM 22.2/Year 3 Semester 1/DS304.3-Data Visualization/Group Project/Ect/Time-Wasters & Addiction on Social Media.csv")
+df2 <- read_csv("D:/OneDrive - NSBM/NSBM 22.2/Year 3 Semester 1/DS304.3-Data Visualization/Group Project/Ect/Untitledhttps___nsbm365-my.sharepoint.com__x__g_personal_desilvadsd_students_nsbm_ac_lk_ERjiMVt_JrlFkw.csv")
+```
+```{r}
+head(df1)
+```
+
+```{r}
+head(df2)
+```
+
+```{r}
+# Finding a common column to merge on
+print(colnames(df1))
+```
+```{r}
+# Finding a common column to merge on
+print(colnames(df2))
+```
+
+---
+
+<br>
+
+## **Data Cleaning & Preprocessing**
+
+```{r}
+# Rename df2 columns to match df1
+colnames(df2) <- c(
+  "Age",
+  "Gender",
+  "Location",
+  "Profession",
+  "Platform",
+  "Total Time Spent",
+  "Video Category",
+  "Video Length",
+  "Number of Videos Watched",
+  "Frequency",
+  "Watch Reason",
+  "DeviceType",
+  "Watch Time",
+  "Self Control",
+  "Addiction Level",
+  "CurrentActivity"
+)
+```
+
+```{r}
+colnames(df2)
+```
+
+```{r}
+# Converting df2 to numeric
+df2$`Total Time Spent` <- as.numeric(gsub("[^0-9.]", "", df2$`Total Time Spent`))
+df2$`Video Length` <- as.numeric(gsub("[^0-9.]", "", df2$`Video Length`))
+df2$`Number of Videos Watched` <- as.numeric(gsub("[^0-9.]", "", df2$`Number of Videos Watched`))
+
+```
+
+```{r}
+# Merging after fixing types
+merged_df <- full_join(df1, df2, by = c(
+  "Age", "Gender", "Location", "Profession", "Platform", "Total Time Spent",
+  "Video Category", "Video Length", "Number of Videos Watched", "Frequency",
+  "Watch Reason", "DeviceType", "Watch Time", "Self Control",
+  "Addiction Level", "CurrentActivity"
+))
+```
+
+```{r}
+write_csv(merged_df, "merged_dataset.csv")
+```
+
+```{r}
+data <- read.csv("merged_dataset.csv", stringsAsFactors = FALSE)
+```
+
+
+```{r}
+str(data)
+```
+```{r}
+summary(data)
+```
+
+```{r}
+missing_values <- sapply(data, function(x) sum(is.na(x) | x == ""))
+print(missing_values)
+```
+```{r}
+gg_miss_var(data) + 
+  labs(title = "Missing Values by Variable",
+       y = "Variables",
+       x = "Count of Missing Values") +
+  theme_minimal()
+```
+
+- No missing values.
+
+```{r}
+# replacing median values with NA vales of numeric columns, 
+numeric_cols <- c("Age", "Total.Time.Spent", "Video.Length", 
+                 "Number.of.Videos.Watched", "Self.Control", "Addiction.Level")
+
+for (col in numeric_cols) {
+  if (missing_values[col] > 0) {
+    data[is.na(data[,col]) | data[,col] == "", col] <- median(data[,col], na.rm = TRUE)
+  }
+}
+```
+
+```{r}
+# replacing mode values with NA vales of categorical columns, 
+categorical_cols <- c("Gender", "Location", "Profession", "Platform", 
+                     "Video.Category", "Frequency", "Watch.Reason", 
+                     "DeviceType", "Watch.Time", "CurrentActivity")
+
+get_mode <- function(v) {
+  uniqv <- unique(na.omit(v))
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+for (col in categorical_cols) {
+  if (missing_values[col] > 0) {
+    mode_value <- get_mode(data[,col])
+    data[is.na(data[,col]) | data[,col] == "", col] <- mode_value
+  }
+}
+```
+
+```{r}
+# Converting categorical variables to factors for better analysis
+data <- data %>%
+  mutate(
+    Gender = as.factor(Gender),
+    Location = as.factor(Location),
+    Profession = as.factor(Profession),
+    Platform = as.factor(Platform),
+    Video.Category = as.factor(Video.Category),
+    Frequency = as.factor(Frequency),
+    Watch.Reason = as.factor(Watch.Reason),
+    DeviceType = as.factor(DeviceType),
+    Watch.Time = as.factor(Watch.Time),
+    CurrentActivity = as.factor(CurrentActivity)
+  )
+```
+
+
+```{r}
+# Extracting hour from Watch.Time for better analysis
+# Converting Watch.Time to proper time format
+data$Watch.Time <- as.character(data$Watch.Time)
+data$Hour <- as.numeric(substr(data$Watch.Time, 1, 2))
+```
+
+
+```{r}
+# Checking for outliers in numeric variables
+boxplot_list <- list()
+for (col in numeric_cols) {
+  p <- ggplot(data, aes_string(y = col)) +
+    geom_boxplot(fill = "#69b3a2") +
+    theme_minimal() +
+    labs(title = paste("Boxplot of", col))
+  boxplot_list[[col]] <- p
+}
+```
+
+```{r}
+do.call(grid.arrange, c(boxplot_list, ncol = 2))
+```
+
+- **Outliers** are primarily present in **'Video.Length'** and **'Number.of.Videos.Watched'**, which may skew averages and should be handled carefully during analysis.
+- Self-reported variables like 'Self.Control' and 'Addiction.Level' show reasonable distribution and can be used for predictive analysis or regression.
+- The distribution of **'Total.Time.Spent'** is wide but **lacks strong outliers**, suggesting consistent heavy usage across users.
+
+---
+
+<br>
+
+## **Exploratory Data Analysis (EDA)**
+
+```{r}
+platform_summary <- data %>%
+  group_by(Platform) %>%
+  summarise(
+    Count = n(),
+    Mean_Age = mean(Age, na.rm = TRUE),
+    Mean_Time_Spent = mean(Total.Time.Spent, na.rm = TRUE),
+    Mean_Videos_Watched = mean(Number.of.Videos.Watched, na.rm = TRUE),
+    Mean_Addiction_Level = mean(Addiction.Level, na.rm = TRUE),
+    Mean_Self_Control = mean(Self.Control, na.rm = TRUE)
+  )
+
+print(platform_summary)
+```
+
+<br>
+
+### 1. Distribution & Comparison Visualizations
+
+<br>
+
+#### Distribution Visualizations
+
+```{r}
+# Age distribution
+age_plot <- ggplot(data, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "#69b3a2", color = "white", alpha = 0.7) + 
+  stat_bin(binwidth = 5, geom = "text", aes(label = ..count..), vjust = 1.5) + 
+  labs(title = "Age Distribution",
+       x = "Age",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+```{r}
+# Platform distribution
+platform_plot <- ggplot(data, aes(x = Platform, fill = Platform)) +
+  geom_bar() + 
+  geom_text(stat = "count", aes(label = ..count..), vjust = 1.5, color = "white") + 
+  scale_fill_viridis_d() +
+  labs(title = "Distribution by Platform",
+       x = "Platform",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        legend.position = "none")
+```
+
+```{r}
+# Addiction level distribution
+addiction_plot <- ggplot(data, aes(x = Addiction.Level)) +
+  geom_histogram(binwidth = 1, fill = "#ff7f0e", color = "white", alpha = 0.7) + 
+  stat_bin(binwidth = 1, geom = "text", aes(label = ..count..), vjust = 1.5, color = "black") + 
+  labs(title = "Addiction Level Distribution",
+       x = "Addiction Level",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+```{r}
+# Time spent distribution
+time_plot <- ggplot(data, aes(x = Total.Time.Spent)) +
+  geom_histogram(binwidth = 10, fill = "#2ca02c", color = "white", alpha = 0.7) + 
+  labs(title = "Total Time Spent Distribution",
+       x = "Total Time Spent (minutes)",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+```{r}
+basic_dist_plots <- grid.arrange(age_plot, platform_plot, addiction_plot, time_plot, ncol = 2)
+```
+
+
+##### 1. Age Distribution
+- The dataset includes users aged between **18 and 68 years**.
+- The largest age groups are **20–25** and **40–45**, each with approximately **100 users**.
+- This shows a **bimodal distribution**, indicating that both young adults and middle-aged individuals are highly engaged with social media.
+
+##### 2. Platform Distribution
+- **Instagram** leads with just over **220 users** selecting it as their primary platform.
+- **TikTok** and **YouTube** are close behind, each with around **210–215 users**.
+- **Facebook** has the lowest count at **~180 users**.
+- This suggests that visual and short-form content platforms are more dominant in this user base.
+
+##### 3. Addiction Level Distribution
+- Addiction scores range from **0 to 9.5**, on a scale of 0–10.
+- Most users cluster around:
+  - **0.5–1.5** (approx. **150 users**)
+  - **2.5–3.5** (approx. **200 users**)
+  - **5.0–6.0** (approx. **200 users**)
+- Very few users report extreme values (either very low or near 10).
+- This implies a broad awareness of usage habits, with moderate levels of addiction being the most common.
+
+##### 4. Total Time Spent Distribution
+- Time spent on social media per day ranges from **0 to 300 minutes**.
+- A noticeable peak appears around **50 minutes**, with **~50 users** in that bin.
+- Usage is relatively uniform across other bins, showing diverse habits:
+  - Light users (~30–60 minutes)
+  - Moderate users (100–150 minutes)
+  - Heavy users (200–300 minutes)
+- This supports the idea that **social media engagement is widespread and variable**, making generalizations difficult without further segmentation.
+
+<br>
+
+```{r}
+ggsave("basic_distributions.png", basic_dist_plots, width = 12, height = 10)
+```
+
+---
+
+<br>
+
+#### Platform Comparison Visualizations
+
+```{r}
+# mean values per Platform
+mean_stats <- data %>%
+  group_by(Platform) %>%
+  summarise(
+    mean_addiction = mean(Addiction.Level, na.rm = TRUE),
+    mean_time = mean(Total.Time.Spent, na.rm = TRUE),
+    mean_videos = mean(Number.of.Videos.Watched, na.rm = TRUE)
+  )
+```
+
+```{r}
+# Addiction level by platform
+platform_addiction <- ggplot(data, aes(x = Platform, y = Addiction.Level, fill = Platform)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_text(data = mean_stats, aes(x = Platform, y = mean_addiction, label = round(mean_addiction, 1)),
+            vjust = -0.5, color = "black", fontface = "bold") +
+  scale_fill_viridis_d() +
+  labs(title = "Addiction Level by Platform", x = "Platform", y = "Addiction Level") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
+
+```
+
+```{r}
+# Time spent by platform
+platform_time <- ggplot(data, aes(x = Platform, y = Total.Time.Spent, fill = Platform)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_text(data = mean_stats, aes(x = Platform, y = mean_time, label = round(mean_time, 1)),
+            vjust = -0.5, color = "black", fontface = "bold") +
+  scale_fill_viridis_d() +
+  labs(title = "Total Time Spent by Platform", x = "Platform", y = "Total Time Spent (minutes)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
+
+```
+
+```{r}
+# Videos watched by platform
+platform_videos <- ggplot(data, aes(x = Platform, y = Number.of.Videos.Watched, fill = Platform)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_text(data = mean_stats, aes(x = Platform, y = mean_videos, label = round(mean_videos, 1)),
+            vjust = -0.5, color = "black", fontface = "bold") +
+  scale_fill_viridis_d() +
+  labs(title = "Number of Videos Watched by Platform", x = "Platform", y = "Number of Videos Watched") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "none")
+
+```
+
+```{r}
+platform_comp_plots <- grid.arrange(platform_addiction, platform_time, platform_videos, ncol = 2)
+```
+
+These boxplots compare **Addiction Level**, **Total Time Spent**, and **Number of Videos Watched** across four major platforms: **Facebook**, **Instagram**, **TikTok**, and **YouTube**.
+
+##### 1. Addiction Level by Platform
+
+- YouTube shows a slightly higher **median addiction level**, suggesting longer engagement sessions may relate to stronger platform pull.
+- All platforms have a **wide spread**, indicating diverse user behavior and perception of addiction.
+- Outliers are present, showing users with addiction levels above 7–8.
+
+##### 2.Total Time Spent by Platform
+
+- Facebook users appear to spend slightly **more time** daily on average compared to others.
+- All platforms exhibit **long tail distributions**, meaning some users are on them for **3–5+ hours daily**.
+- The variability is high, particularly on Instagram and TikTok.
+
+##### 3. Number of Videos Watched by Platform
+
+- YouTube has slightly more users who consume **large numbers of videos**, as seen by outliers above 70.
+- Despite TikTok’s reputation for endless short clips, YouTube users in this sample watch more videos on average.
+
+##### Key Takeaways
+
+- All platforms show **moderate addiction levels**, with **YouTube slightly higher** in both addiction and time spent.
+- **Facebook users** spend the **most daily time** overall, which could be attributed to older demographics and passive browsing.
+- **YouTube and Instagram** drive the **highest video consumption**, possibly due to autoplay features and short-form content.
+
+<br>
+
+```{r}
+ggsave("platform_comparisons.png", platform_comp_plots, width = 15, height = 5)
+```
+
+---
+
+<br>
+
+#### Category & Reason Visualizations 
+
+```{r}
+# Watch reason by platform
+reason_platform <- ggplot(data, aes(x = Watch.Reason, fill = Platform)) +
+  geom_bar(position = "dodge") +
+  scale_fill_viridis_d() +
+  labs(title = "Watch Reason by Platform",
+       x = "Watch Reason",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+# Hour of day analysis
+hour_platform <- ggplot(data, aes(x = Total.Time.Spent, fill = Platform)) +
+  geom_histogram(position = "dodge", binwidth = 1, alpha = 0.7) +
+  scale_fill_viridis_d() +
+  labs(title = "Watch Time by Platform",
+       x = "Hour of Day",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+```{r}
+# Video category by platform
+category_platform <- ggplot(data, aes(x = Video.Category, fill = Platform)) +
+  geom_bar(position = "dodge") +
+  scale_fill_viridis_d() +
+  labs(title = "Video Category by Platform",
+       x = "Video Category",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+# Gender distribution by platform
+gender_platform <- ggplot(data, aes(x = Gender, fill = Platform)) +
+  geom_bar(position = "dodge") +
+  scale_fill_viridis_d() +
+  labs(title = "Gender Distribution by Platform",
+       x = "Gender",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+```{r}
+categorical_plots1 <- grid.arrange(reason_platform, category_platform, ncol = 1)
+```
+```{r}
+categorical_plots2 <- grid.arrange(hour_platform, gender_platform, ncol = 1)
+```
+
+
+This section analyzes how different platforms are used based on **user motivations**, **content preferences**, **watching time behavior**, and **gender distribution**.
+
+##### 1. Watch Reason by Platform
+
+- **Habit** is the **most cited reason** across all platforms:
+  - Instagram users: ~80 respondents
+  - YouTube users: ~65 respondents
+  - Facebook & TikTok: ~60 each
+- **Boredom** and **Entertainment** are also frequent reasons, especially among TikTok and Instagram users.
+- **Procrastination** is less commonly cited (~30–40 users per platform), but still notable.
+
+**Insight**: Social media is most often used out of **habit** and **entertainment needs**, implying habitual engagement rather than intentional use.
+
+##### 2. Video Category by Platform
+
+- **Most Watched Categories**:
+  - **Jokes/Memes**: TikTok leads with ~45 users.
+  - **Life Hacks** and **Gaming** are popular on Instagram and YouTube.
+  - **ASMR** and **Vlogs** are evenly consumed across platforms (~20–30 users each).
+
+**Insight**: Users gravitate toward light-hearted or practical content, and content preferences vary by platform—e.g., TikTok users favor memes, while YouTube sees more gaming and educational content.
+
+##### 3. Watch Time by Platform
+
+- **Wide time spread** with activity spanning **all 300 minutes**.
+- Peaks between **0–60 minutes**, with Instagram and TikTok showing heavier early activity.
+- **No clear time-of-day clusters** due to usage being aggregated over total time spent, not actual hour of day.
+
+**Insight**: Users access platforms consistently throughout the day, though **high-frequency use in shorter bursts** is especially visible for short-form video apps like TikTok.
+
+##### 4. Gender Distribution by Platform
+
+- **Males dominate** usage on all platforms:
+  - Male counts: 130–150 per platform
+  - Female counts: 70–95 per platform
+- The gap is most prominent on **Instagram and YouTube**
+
+**Insight**: The dataset indicates a **gender imbalance**, which may affect addiction patterns, content preference, and platform usage style.
+
+<br>
+
+#### **Summary**
+
+| Aspect                | Notable Findings                                         |
+|----------------------|----------------------------------------------------------|
+| Watch Reason          | Habit, boredom, and entertainment are top motivations   |
+| Content Preference    | Jokes/Memes and Life Hacks dominate, esp. on TikTok     |
+| Watch Time Behavior   | Peaks in short bursts; consistent usage across the day  |
+| Gender Composition    | Higher male usage on all platforms                      |
+|                       |                                                         |
+
+<br>
+
+---
+
+<br>
+
+#### Video Category Distribution
+
+```{r}
+video_category_counts <- data %>%
+  count(Video.Category) %>%
+  arrange(desc(n))
+
+interactive_categories <- plot_ly(
+  video_category_counts,
+  x = ~Video.Category,
+  y = ~n,
+  type = "bar",
+  marker = list(
+    color = viridis(length(unique(data$Video.Category))),
+    line = list(color = "rgb(8,48,107)", width = 1.5)
+  ),
+  text = ~n,
+  textposition = "auto"
+) %>%
+  layout(
+    title = "Video Category Distribution",
+    xaxis = list(title = "Video Category", tickangle = 45),
+    yaxis = list(title = "Count"),
+    annotations = list(
+      x = 1, y = -0.15, 
+      text = " ", 
+      showarrow = F, 
+      xref = 'paper', yref = 'paper'
+    )
+  )
+
+interactive_categories
+```
+
+
+This bar chart displays the **frequency of videos watched across various content categories**:
+
+- **Jokes/Memes** lead with the **highest count at 152**, confirming humor as the most consumed genre in the dataset.
+- **Life Hacks (133)** and **Gaming (101)** follow closely, highlighting an interest in **practical content** and **entertainment through gameplay**.
+- **Entertainment (102)** and **Vlogs (99)** are nearly tied, indicating steady consumption of casual and lifestyle content.
+- **Pranks (97)** and **Trends (85)** reflect the popularity of **virality and challenges**, likely fueled by platforms like TikTok and Instagram.
+- **ASMR (70)** has a niche but solid following, appealing to users seeking relaxation or sensory content.
+- **Comedy (27)**, while related to Jokes/Memes, is the least consumed, possibly due to overlapping classification or platform bias.
+
+---
+
+##### Summary
+
+- **Humor and lifestyle content dominate user interest**, with Jokes/Memes, Life Hacks, and Vlogs making up the majority.
+- **Emerging formats like ASMR and Trends** show engagement but remain secondary.
+- This distribution provides strong insight into **user intent**, with a balance between **entertainment, relaxation, and informational content**.
+
+---
+
+<br>
+
+#### Platform Usage by Gender
+
+```{r}
+print(levels(data$Gender))
+print(table(data$Gender))
+
+# removing "other" from gender
+data$Gender_fixed <- as.factor(ifelse(data$Gender %in% c("Male", "male"), "Male",
+                                     ifelse(data$Gender %in% c("Female", "female"), "Female", NA)))
+
+data <- data[!is.na(data$Gender_fixed), ]
+```
+
+```{r}
+print("Fixed Gender variable levels:")
+print(levels(data$Gender_fixed))
+print(table(data$Gender_fixed))
+```
+
+
+```{r}
+platform_gender <- data %>%
+  count(Platform, Gender_fixed) %>%
+  group_by(Platform)
+
+interactive_platform_gender <- plot_ly(
+  platform_gender,
+  x = ~Platform,
+  y = ~n,
+  color = ~Gender_fixed,
+  type = "bar",
+  text = ~n,
+  textposition = "auto",
+  colors = viridis(length(unique(data$Gender_fixed)))
+) %>%
+  layout(
+    title = "Platform Usage by Gender",
+    xaxis = list(title = "Platform"),
+    yaxis = list(title = "Count"),
+    barmode = "stack"
+  )
+
+interactive_platform_gender
+```
+
+
+This chart displays **social media platform preferences segmented by gender**:
+
+- Across all platforms, **male users significantly outnumber female users**, indicating a possible gender imbalance in overall sample or usage trends.
+- **Instagram** has the highest total usage, with nearly **twice as many males** as females, reinforcing its broad appeal but skewed engagement.
+- **TikTok** and **YouTube** follow similar patterns, each showing strong male dominance but also high female participation, especially on TikTok.
+- **Facebook** shows the **lowest overall usage** but still reflects the same male-majority trend.
+
+---
+
+##### Summary
+
+- These results suggest that **males are more represented or more active** on these platforms within the dataset.
+- **Instagram and TikTok** show the most **gender-balanced engagement**, relative to their high volume.
+- The consistent male lead across all platforms could influence **content preference**, **time usage patterns**, and even **addiction dynamics**, warranting deeper gender-based behavioral analysis.
+
+---
+
+
+<br>
+
+
+### 2. Advanced Comparative Charts
+
+This section presents multi-dimensional comparisons across social media platforms using advanced statistical visualizations. Each plot highlights behavioral and psychological trends among users.
+
+---
+
+#### Parallel Coordinate Plot: Key Metrics by Platform
+
+```{r}
+# Preparing data for parallel coordinates
+parallel_data <- data %>%
+  select(Platform, Age, Total.Time.Spent, Number.of.Videos.Watched, 
+         Self.Control, Addiction.Level) %>%
+  group_by(Platform) %>%
+  summarise(
+    Mean_Age = mean(Age, na.rm = TRUE),
+    Mean_Time_Spent = mean(Total.Time.Spent, na.rm = TRUE),
+    Mean_Videos = mean(Number.of.Videos.Watched, na.rm = TRUE),
+    Mean_Self_Control = mean(Self.Control, na.rm = TRUE),
+    Mean_Addiction = mean(Addiction.Level, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+# Reshaping for parallel coordinates
+parallel_data_long <- parallel_data %>%
+  pivot_longer(cols = -Platform, 
+               names_to = "Variable", 
+               values_to = "Value")
+
+# Scaling values to 0-1 for better comparison
+parallel_data_long <- parallel_data_long %>%
+  group_by(Variable) %>%
+  mutate(Scaled_Value = (Value - min(Value)) / (max(Value) - min(Value))) %>%
+  ungroup()
+
+
+parallel_plot <- ggplot(parallel_data_long, 
+       aes(x = Variable, y = Scaled_Value, group = Platform, color = Platform)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  scale_color_viridis_d() +
+  labs(title = "Parallel Coordinate Plot: Key Metrics by Platform",
+       subtitle = "Values scaled to 0-1 range for comparison",
+       x = "Variable",
+       y = "Scaled Value") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+print(parallel_plot)
+```
+
+- **Instagram**: Highest in mean **Addiction Level (~6.8)** and **Videos Watched (~42/day)**
+- **Facebook**: Highest in **Time Spent (~250 mins/day)**, lowest in videos watched
+- **YouTube**: Highest in **Self-Control (~8.2)**
+
+**Insight**: Platforms vary significantly in usage styles. Instagram is fast-paced and addictive, YouTube is intentional and controlled, Facebook is high-time but passive.
+
+---
+
+<br>
+
+#### Scatter Plot Matrix by Platform
+
+```{r}
+# subset of the data
+data_subset <- data %>% 
+  sample_n(min(500, nrow(data))) %>%
+  select(Platform, Age, Total.Time.Spent, Number.of.Videos.Watched, 
+         Self.Control, Addiction.Level)
+
+scatter_matrix <- ggpairs(
+  data_subset,
+  columns = 2:6,
+  mapping = aes(color = Platform),
+  upper = list(continuous = wrap("cor", size = 3)),
+  diag = list(continuous = wrap("densityDiag")),
+  lower = list(continuous = wrap("points", alpha = 0.5, size = 0.8)),
+  title = "Scatter Plot Matrix by Platform"
+) + 
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+print(scatter_matrix)
+```
+
+
+- **Correlation highlights**:
+  - `Self-Control` vs `Addiction Level`: **Strong negative** (e.g., -0.96 for Instagram)
+  - `Videos Watched` vs `Addiction Level`: Moderate positive for TikTok
+- **Platform-specific insights**:
+  - **TikTok**: Higher addiction correlates with lower self-control and high video volume
+  - **YouTube**: Weaker correlations overall, indicating diverse behavior
+
+**Insight**: Psychological and behavioral patterns vary across platforms, with Instagram and TikTok showing tighter coupling between usage and addiction.
+
+---
+
+<br>
+
+#### Distribution of Addiction Levels by Platform
+
+```{r}
+ridge_addiction <- ggplot(data, aes(x = Addiction.Level, y = Platform, fill = Platform)) +
+  geom_density_ridges(alpha = 0.7, scale = 2, quantile_lines = TRUE, quantiles = 2) +
+  scale_fill_viridis_d() +
+  labs(title = "Distribution of Addiction Levels by Platform",
+       subtitle = "With median lines",
+       x = "Addiction Level",
+       y = "Platform") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "none"
+  )
+```
+
+```{r}
+print(ridge_addiction)
+```
+
+- Most users on **Instagram & TikTok** report addiction levels between **4–6**
+- **Facebook** is centered around **3–4**, while **YouTube** is spread out
+
+**Insight**: Algorithm-heavy platforms lead to higher reported addiction levels.
+
+---
+
+<br>
+
+#### Proportional Distribution of Video Categories by Platform
+
+```{r}
+prop_data <- data %>%
+  count(Platform, Video.Category) %>%
+  group_by(Platform) %>%
+  mutate(Proportion = n / sum(n)) %>%
+  ungroup()
+
+prop_bars <- ggplot(prop_data, aes(x = Platform, y = Proportion, fill = Video.Category)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_viridis_d() +
+  labs(title = "Proportional Distribution of Video Categories by Platform",
+       x = "Platform",
+       y = "Proportion") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 0)
+  )
+```
+
+```{r}
+print(prop_bars)
+```
+
+- Consistent top categories across platforms:
+  - `Jokes/Memes`, `Life Hacks`, `Trends`
+- **YouTube** users prefer `Gaming`, `Vlogs`
+- **TikTok** and **Instagram** push short, viral content
+
+**Insight**: Platform algorithms reinforce specific content types.
+
+---
+
+<br>
+
+#### Flow Diagram: Platform → Video Category → Watch Reason
+
+```{r}
+alluvial_data <- data %>%
+  group_by(Platform, Video.Category, Watch.Reason) %>%
+  summarise(Count = n(), .groups = 'drop')
+
+alluvial_plot <- ggplot(alluvial_data,
+       aes(axis1 = Platform, axis2 = Video.Category, axis3 = Watch.Reason, 
+           y = Count)) +
+  geom_alluvium(aes(fill = Platform), width = 1/12) +
+  geom_stratum(width = 1/12, fill = "white", color = "grey") +
+  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
+  scale_fill_viridis_d() +
+  labs(title = "Flow Diagram: Platform → Video Category → Watch Reason",
+       x = "",
+       y = "Count") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "none"
+  )
+```
+
+```{r}
+print(alluvial_plot)
+```
+
+- Popular flows:
+  - TikTok → `Jokes/Memes` → `Habit`
+  - YouTube → `Gaming` → `Entertainment`
+  - Instagram → `Life Hacks` → `Boredom`
+
+**Insight**: Most users are driven by **habit** and **entertainment**, with platform-personalized content driving reasons.
+
+---
+
+<br>
+
+#### Heatmap: Watch Hours by Platform
+
+```{r}
+hour_platform_heatmap <- data %>%
+  count(Total.Time.Spent, Platform) %>%
+  ggplot(aes(x = Total.Time.Spent, y = Platform, fill = n)) +
+  geom_tile() +
+  scale_fill_viridis_c(name = "Count") +
+  scale_x_continuous(breaks = 0:23) +
+  labs(title = "Heatmap: Watch Hours by Platform",
+       x = "Hour of Day",
+       y = "Platform") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+```
+
+```{r}
+print(hour_platform_heatmap)
+```
+
+- Dense interaction under **100 minutes/day**
+- Usage is **more uniform** on Facebook and Instagram
+- **Spikes** in TikTok & YouTube usage are more scattered, indicating binge behavior
+
+**Insight**: Usage sessions on TikTok and YouTube may be shorter but more frequent or intensive.
+
+---
+
+<br>
+
+#### Relationship: Time Spent, Videos Watched & Addiction Level
+
+```{r}
+bubble_chart <- ggplot(data, aes(x = Total.Time.Spent, y = Number.of.Videos.Watched, 
+                       size = Addiction.Level, color = Platform)) +
+  geom_point(alpha = 0.7) +
+  scale_size_continuous(range = c(1, 10)) +
+  scale_color_viridis_d() +
+  labs(title = "Relationship: Time Spent, Videos Watched & Addiction Level",
+       x = "Total Time Spent (minutes)",
+       y = "Number of Videos Watched",
+       size = "Addiction Level") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+```
+
+```{r}
+print(bubble_chart)
+```
+
+- **Larger bubbles (high addiction)** occur around:
+  - **150–200 minutes/day**
+  - **30–50 videos/day**
+- Clusters most visible for **Instagram and TikTok**
+
+**Insight**: There's a clear volume-addiction connection — the more time and content, the higher the addiction.
+
+---
+
+<br>
+
+#### Addiction Level by Platform and Gender
+
+```{r}
+violin_plot <- ggplot(data, aes(x = Platform, y = Addiction.Level, fill = Gender)) +
+  geom_violin(position = position_dodge(0.7), alpha = 0.7) +
+  geom_boxplot(position = position_dodge(0.7), width = 0.1, alpha = 0.7) +
+  scale_fill_viridis_d() +
+  labs(title = "Addiction Level by Platform and Gender",
+       x = "Platform",
+       y = "Addiction Level") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+```
+
+```{r}
+print(violin_plot)
+```
+
+- **Males** show slightly higher medians
+- **Other** gender users on TikTok show wide variation (0–8+)
+- **Instagram** displays a tight, high addiction range
+
+**Insight**: Addiction distribution varies more in marginalized or less represented gender categories.
+
+---
+
+<br>
+
+#### Correlation Heatmaps by Platform
+
+```{r}
+# Function to calculate correlation for each platform
+get_platform_cor <- function(platform_name) {
+  platform_data <- data %>% 
+    filter(Platform == platform_name) %>%
+    select(Age, Total.Time.Spent, Video.Length, Number.of.Videos.Watched, 
+           Self.Control, Addiction.Level)
+  
+  cor_matrix <- cor(platform_data, use = "pairwise.complete.obs")
+  cor_df <- as.data.frame(as.table(cor_matrix))
+  cor_df$Platform <- platform_name
+  return(cor_df)
+}
+
+# Applying function to each platform
+platforms <- unique(data$Platform)
+cor_data <- do.call(rbind, lapply(platforms, get_platform_cor))
+names(cor_data) <- c("Var1", "Var2", "Correlation", "Platform")
+
+cor_heatmap <- ggplot(cor_data, aes(x = Var1, y = Var2, fill = Correlation)) +
+  geom_tile() +
+  facet_wrap(~ Platform) +
+  scale_fill_gradient2(low = "#1b9e77", mid = "white", high = "#d95f02", 
+                      midpoint = 0, limits = c(-1, 1)) +
+  labs(title = "Correlation Heatmaps by Platform",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+```{r}
+print(cor_heatmap)
+```
+
+| Platform   | Positive Correlations           | Negative Correlation              |
+|------------|----------------------------------|-----------------------------------|
+| Facebook   | Time ↔ Addiction                | Self-Control ↔ Addiction          |
+| Instagram  | Videos ↔ Addiction              | Self-Control ↔ Addiction          |
+| TikTok     | Time & Videos ↔ Addiction       | Self-Control ↔ Addiction          |
+| YouTube    | Videos ↔ Addiction              | Self-Control ↔ Addiction          |
+|            |                                 |                                   |
+
+**Insight**: Across all platforms, **Self-Control is consistently and negatively correlated with Addiction Level**, supporting the psychological consistency of the data.
+
+---
+
+<br>
+
+#### Distribution of Time Spent by Platform
+
+This section analyzes distribution of **Total Time Spent (in minutes)** across different platforms:
+
+```{r}
+ridge_plot <- ggplot(data, aes(x = Total.Time.Spent, y = Platform, fill = Platform)) +
+  geom_density_ridges(alpha = 0.7, scale = 2) +
+  scale_fill_viridis_d() +
+  labs(title = "Distribution of Time Spent by Platform",
+       x = "Total Time Spent (minutes)",
+       y = "Platform") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "none"
+  )
+
+print(ridge_plot)
+```
+
+
+- **YouTube** shows a **broad and high distribution**, indicating that users consistently spend significant time on the platform. It suggests a mix of long-form content and sustained engagement.
+- **TikTok** exhibits a slightly more centralized and sharp distribution, indicating a tendency toward **shorter, frequent sessions**. Users likely binge-watch short videos in dense time windows.
+- **Instagram** has a relatively **even spread** across time intervals, with notable peaks around **100–150 mins** and again at **200+ mins**, indicating two types of user behavior: moderate scrollers and heavier users.
+- **Facebook** shows the **highest density at longer durations**, especially around **200–250+ minutes**, suggesting that users spend longer but potentially **passive or background time** on the platform.
+
+---
+
+##### Summary
+
+- **YouTube** and **Facebook** dominate in terms of high total time spent, but likely for **different reasons** (active vs passive consumption).
+- **TikTok** and **Instagram** reflect more variable and perhaps **intent-driven usage patterns**, with peaks suggesting addictive short-form engagement.
+
+---
+
+<br>
+
+#### Video Consumption by Category and Platform
+
+```{r}
+treemap_data <- data %>%
+  group_by(Video.Category, Platform) %>%
+  summarise(
+    Total_Videos = sum(Number.of.Videos.Watched, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+treemap(
+  treemap_data,
+  index = c("Video.Category", "Platform"),
+  vSize = "Total_Videos",
+  type = "index",
+  palette = viridis(length(unique(treemap_data$Video.Category))),
+  title = "Distribution of Videos Watched by Category and Platform",
+  fontsize.labels = c(14, 10),
+  fontcolor.labels = c("white", "black"),
+  border.col = c("white", "gray70"),
+  inflate.labels = TRUE
+)
+```
+
+
+The treemap above illustrates the **distribution of video content types across social media platforms**:
+
+- **TikTok dominates in Jokes/Memes and Vlogs**, aligning with its short-form, trend-driven ecosystem where humor and daily lifestyle content perform well.
+- **YouTube leads in Gaming, Entertainment, and Life Hacks**, which are traditionally long-form content types, ideal for sustained viewing.
+- **Instagram** shows significant engagement in **ASMR, Vlogs, and Life Hacks**, suggesting a user base interested in relaxing and lifestyle content.
+- **Facebook** appears more evenly distributed across **Comedy, Pranks, and Trends**, implying a generalized use case and broad demographic appeal.
+
+---
+
+#####  Summary
+
+- **Vlogs** and **Life Hacks** are the most cross-platform content categories, appearing prominently on **YouTube, TikTok, Instagram, and Facebook**.
+- **ASMR and Comedy** are **more niche**, skewing toward specific platforms like **Instagram and TikTok**.
+- **Gaming and Entertainment** remain largely the domain of **YouTube**, reinforcing its role as a hub for immersive and informational content.
+
+---
+
+
+<br>
+
+#### Motivation-to-Platform Mapping
+
+```{r}
+# data for Sankey diagram
+network_data <- data %>%
+  group_by(Watch.Reason, Platform) %>%
+  summarise(value = n(), .groups = 'drop')
+
+# nodes and links for the network diagram
+all_nodes <- unique(c(as.character(network_data$Watch.Reason), 
+                      as.character(network_data$Platform)))
+
+nodes_df <- data.frame(
+  name = all_nodes,
+  group = c(rep("Reason", length(unique(network_data$Watch.Reason))),
+            rep("Platform", length(unique(network_data$Platform))))
+)
+
+links_df <- data.frame(
+  source = match(network_data$Watch.Reason, all_nodes) - 1,
+  target = match(network_data$Platform, all_nodes) - 1,
+  value = network_data$value
+)
+
+# Sankey diagram
+sankeyNetwork(
+  Links = links_df, 
+  Nodes = nodes_df,
+  Source = "source", 
+  Target = "target",
+  Value = "value", 
+  NodeID = "name",
+  NodeGroup = "group",
+  colourScale = JS("d3.scaleOrdinal(d3.schemeCategory20)"),
+  sinksRight = TRUE, 
+  nodeWidth = 30,
+  nodePadding = 10,
+  height = 500, 
+  width = 800,
+  fontSize = 12
+)
+```
+
+
+
+This Sankey diagram illustrates how different **user motivations** for social media usage map to specific **platform preferences**:
+
+- **Habit** is the most dominant driver across all platforms, particularly strong for **Instagram** and **YouTube**, indicating ingrained routine usage patterns.
+- **Entertainment** strongly flows into **YouTube** and **TikTok**, aligning with these platforms' emphasis on engaging, algorithm-driven video content.
+- **Boredom** is associated most with **Facebook**, followed by YouTube and TikTok, suggesting passive or filler usage.
+- **Procrastination** has lighter flows overall but shows notable links to **YouTube** and **Instagram**, where users may scroll or binge during idle time.
+
+---
+
+##### Summary
+
+- The diagram highlights that **users often choose platforms based on emotional or situational triggers**, not just content type.
+- **YouTube** is a multi-motivated platform — driven equally by **habit, boredom, entertainment, and procrastination**.
+- **Instagram and TikTok** are highly responsive to **habit and entertainment**, while **Facebook** reflects more **boredom-driven engagement**.
+
+---
+
+<br>
+
+#### Time Spent vs. Addiction Level (Bubble Size = Videos Watched)
+
+```{r}
+bubble_data <- data %>%
+  group_by(Platform, Video.Category) %>%
+  summarise(
+    Avg_Addiction = mean(Addiction.Level, na.rm = TRUE),
+    Total_Videos = sum(Number.of.Videos.Watched, na.rm = TRUE),
+    Avg_Time = mean(Total.Time.Spent, na.rm = TRUE),
+    Count = n(),
+    .groups = 'drop'
+  )
+
+bubble_plot <- plot_ly(
+  data = bubble_data,
+  x = ~Avg_Time,
+  y = ~Avg_Addiction,
+  size = ~Total_Videos,
+  color = ~Platform,
+  text = ~paste0(
+    "<b>Platform:</b> ", Platform,
+    "<br><b>Category:</b> ", Video.Category,
+    "<br><b>Avg Time:</b> ", round(Avg_Time, 1), " min",
+    "<br><b>Avg Addiction:</b> ", round(Avg_Addiction, 2),
+    "<br><b>Total Videos:</b> ", Total_Videos,
+    "<br><b>Users:</b> ", Count
+  ),
+  type = 'scatter',
+  mode = 'markers',
+  marker = list(opacity = 0.8, sizemode = 'diameter', line = list(width = 1, color = '#333')),
+  sizes = c(10, 80)
+) %>%
+  layout(
+    title = list(text = "<b>Relationship Between Time Spent, Addiction Level, and Videos Watched</b>"),
+    xaxis = list(title = "<b>Average Time Spent (minutes)</b>", zeroline = FALSE),
+    yaxis = list(title = "<b>Average Addiction Level</b>", zeroline = FALSE, range = c(1.5, 5.2)),
+    legend = list(title = list(text = "<b>Platform</b>"), orientation = "v", x = 1.02),
+    hoverlabel = list(bgcolor = "white", font = list(size = 12)),
+    margin = list(r = 120, t = 80)
+  )
+
+bubble_plot
+```
+
+
+
+This bubble chart illustrates how **average time spent**, **average addiction level**, and **number of videos watched** vary across platforms:
+
+- The **x-axis** represents **Average Time Spent (minutes)**.
+- The **y-axis** represents **Average Addiction Level** (scale 0–10).
+- **Bubble size** corresponds to the **number of videos watched**.
+- **Bubble color** distinguishes platforms: Facebook, Instagram, TikTok, YouTube.
+
+---
+
+##### Key Insights:
+
+- **YouTube** (pink) shows several large bubbles at **higher addiction levels (>4.0)**, despite moderate time spent, suggesting that **intense but not necessarily lengthy engagement** may contribute more to perceived addiction.
+- **Instagram** (orange) bubbles cluster around **higher addiction levels (3.5–4.0)** and **moderate time spent (140–160 mins)**, with medium to large bubble sizes, implying **frequent content consumption and high engagement**.
+- **Facebook** (green) appears with **higher time spent (~170–190 mins)** but generally **lower addiction scores (~2.5–3.0)**, suggesting **passive use or background consumption**.
+- **TikTok** (blue) bubbles are more centralized and moderate in size, indicating **stable average usage**, but with some users showing relatively high addiction at shorter time spans.
+
+---
+
+##### Summary:
+
+- **Addiction is not strictly correlated with time spent** — some users show high addiction with modest time, especially on YouTube and Instagram.
+- **Facebook users consume more time** but often report **lower addiction**, indicating **low-engagement, habitual usage**.
+- **Videos Watched** adds a third dimension, revealing that **heavy consumers aren't always the most addicted** — content quality and platform design likely play roles.
+
+---
+
+<br>
+
+#### 3D Behavioral Relationship: Time Spent, Self-Control, and Addiction
+
+```{r}
+interactive_3d <- plot_ly(
+  data,
+  x = ~Total.Time.Spent,
+  y = ~Self.Control,
+  z = ~Addiction.Level,
+  color = ~Platform,
+  colors = viridis(length(unique(data$Platform))),
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(
+    size = 5,
+    opacity = 0.8,
+    line = list(width = 0.5, color = 'black')
+  ),
+  text = ~paste(
+    "<b>Platform:</b>", Platform,
+    "<br><b>Age:</b>", Age,
+    "<br><b>Gender:</b>", Gender_fixed,
+    "<br><b>Videos Watched:</b>", Number.of.Videos.Watched,
+    "<br><b>Time Spent:</b>", Total.Time.Spent,
+    "<br><b>Self Control:</b>", Self.Control,
+    "<br><b>Addiction:</b>", Addiction.Level
+  ),
+  hoverinfo = "text"
+) %>%
+  layout(
+    title = list(
+      text = "<b>3D Relationship: Time Spent, Self Control, and Addiction</b>",
+      x = 0.5
+    ),
+    scene = list(
+      xaxis = list(title = "<b>Total Time Spent</b>"),
+      yaxis = list(title = "<b>Self Control</b>"),
+      zaxis = list(title = "<b>Addiction Level</b>")
+    ),
+    legend = list(title = list(text = "<b>Platform</b>")),
+    margin = list(l = 0, r = 0, b = 0, t = 80)
+  )
+
+interactive_3d
+```
+
+
+
+This 3D scatter plot reveals the multi-dimensional interaction between:
+
+- **X-axis:** Time Spent (in minutes)
+- **Y-axis:** Self-Control score (higher = more control)
+- **Z-axis:** Addiction Level (scale 0–10)
+- **Color:** Platform (Facebook, Instagram, TikTok, YouTube)
+
+---
+
+##### Observations:
+
+- A clear **inverse relationship between Self-Control and Addiction** is visible across all platforms — addiction scores **increase as self-control decreases**, consistent with earlier correlation findings.
+- **Time Spent alone does not strongly predict addiction** — some users with moderate time spent still report high addiction levels, while others with high time show low addiction.
+- **Platform-wise clustering is subtle**:
+  - **YouTube (yellow)** and **TikTok (green)** are more spread out vertically in addiction, indicating varied user experiences.
+  - **Instagram (blue)** clusters more at **mid-to-high addiction levels**, supporting its high average addiction score from earlier charts.
+  - **Facebook (purple)** appears more concentrated in the **moderate zones** for both addiction and time spent.
+
+---
+
+##### Summary:
+
+- This visualization reinforces that **addiction is not just about time**, but a **combined effect of psychological traits (self-control) and platform design**.
+- The **strong vertical stratification** by addiction level highlights **personal behavioral traits** as more influential than usage quantity alone.
+
+---
+
+<br>
+
+#### Heatmap: Average Addiction Level by Platform and Video Category
+
+This heatmap visualizes how average **Addiction Level** varies across combinations of **social media platforms** and **video content categories**.
+
+
+```{r}
+heatmap_data <- data %>%
+  group_by(Platform, Video.Category) %>%
+  summarise(Avg_Addiction = mean(Addiction.Level, na.rm = TRUE))
+
+# Add formatted value column
+heatmap_data$Label <- round(heatmap_data$Avg_Addiction, 1)
+
+# Plot with value labels
+heat_plot <- ggplot(heatmap_data, aes(x = Platform, y = Video.Category, fill = Avg_Addiction)) +
+  geom_tile() +
+  geom_text(aes(label = Label), color = "white", size = 3) +  # value labels
+  scale_fill_viridis_c(option = "D") +
+  labs(title = "Average Addiction Level by Platform and Video Category",
+       x = "Platform",
+       y = "Video Category",
+       fill = "Avg Addiction") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+print(heat_plot)
+
+```
+
+
+##### Visual Interpretation
+
+- **Color scale**:  
+  - Dark purple = **lower average addiction (~2.0)**  
+  - Bright yellow = **higher average addiction (~4.5)**
+
+- **Y-axis**: Video content categories  
+- **X-axis**: Social media platforms (Facebook, Instagram, TikTok, YouTube)
+
+---
+
+##### Key Observations
+
+- **YouTube + Vlogs**: Highest observed average addiction level (≈ 4.7)
+- **Instagram + Trends** and **TikTok + Comedy**: Elevated addiction levels (≈ 4.0–4.3)
+- **TikTok + Pranks** and **Facebook + Comedy**: Among the **lowest addiction levels** (≈ 2.0–2.5)
+- Most other platform–category combinations fall in the mid-range (≈ 3.0–3.5)
+
+---
+
+##### Insights
+
+- Users consuming **vlogs on YouTube** report the **highest addiction levels**, likely due to long-form, narrative-driven engagement.
+- **Trendy and comedic content** on **Instagram and TikTok** may drive compulsive short-form viewing behavior, reflecting moderate to high addiction.
+- **Comedy on Facebook and TikTok** seems to generate **low addiction**, possibly due to low engagement time or passive viewing.
+
+---
+
+##### Summary
+
+- Content type and platform **jointly influence** addiction behavior.
+- High-addiction combinations appear when platforms **specialize in immersive or emotionally engaging content**.
+- This heatmap supports prior findings that **behavioral context**, not platform alone, better predicts user addiction.
+
+---
+
+<br>
+
+#### Relationship Between Time Spent and Addiction Level (by Platform)
+
+This faceted scatter plot visualizes the relationship between **Total Time Spent (minutes)** on each platform and the corresponding **Addiction Level** reported by users.
+
+
+```{r}
+time_addiction_plot <- ggplot(data, aes(x = Total.Time.Spent, y = Addiction.Level, color = Platform)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_viridis_d() +
+  facet_wrap(~Platform) +
+  labs(title = "Relationship Between Time Spent and Addiction Level",
+       x = "Total Time Spent (minutes)",
+       y = "Addiction Level") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        legend.position = "none")
+
+print(time_addiction_plot)
+```
+
+
+##### Plot Overview
+
+- Each subplot represents a specific platform (Facebook, Instagram, TikTok, YouTube).
+- Each point = one user’s total time spent vs. their addiction level.
+- The horizontal **black line** represents a fitted linear regression trend.
+
+---
+
+##### Key Observations by Platform
+
+| Platform   | Trend Direction | Visual Pattern                 | Interpretation                           |
+|------------|------------------|-------------------------------|-------------------------------------------|
+| **Facebook**  | Flat (~0 slope)   | Widely scattered, no trend    | Time spent **does not predict addiction** |
+| **Instagram** | Slightly upward   | Moderate vertical spread      | Small positive association                |
+| **TikTok**    | Flat              | Dense at mid-levels           | Weak relationship                         |
+| **YouTube**   | Slight downward   | Broad spread across time      | Time spent may slightly **decrease** addiction |
+|               |                   |                               |                                            |
+
+##### Insights
+
+- Overall, **no strong linear correlation** is observed between time spent and addiction level for any platform.
+- This supports earlier regression findings where **self-control** was a stronger predictor than raw time usage.
+- The slight upward trend in **Instagram** suggests more time may be mildly associated with higher addiction, likely due to short-form engagement loops.
+- The **downward slope on YouTube** could reflect a different type of usage (e.g., passive, educational), resulting in lower perceived addiction.
+
+---
+
+##### Summary
+
+- **Time spent is not a reliable standalone predictor** of addiction across platforms.
+- Trends are either flat or very weak, indicating other behavioral and psychological factors are more influential.
+- Platform-specific dynamics (e.g., content type, user intent) likely mediate the effect of time on addiction.
+
+---
+
+<br>
+
+####  Radar Chart: Platform Comparison Across Key Metrics
+
+This radar chart visually compares **normalized averages (0 to 1)** of key behavioral and psychological metrics across four platforms: **Facebook, Instagram, TikTok, and YouTube**.
+
+```{r}
+platform_summary <- data %>%
+  group_by(Platform) %>%
+  summarise(
+    Age = mean(Age),
+    Time_Spent = mean(Total.Time.Spent),
+    Self_Control = mean(Self.Control),
+    Addiction_Level = mean(Addiction.Level),
+    Videos_Watched = mean(Number.of.Videos.Watched)
+  )
+
+# Reshape to long format
+radar_data <- platform_summary %>%
+  pivot_longer(cols = -Platform, names_to = "Metric", values_to = "Value") %>%
+  group_by(Metric) %>%
+  mutate(Scaled = (Value - min(Value)) / (max(Value) - min(Value))) %>%
+  ungroup()
+
+# radar chart
+fig <- plot_ly(type = 'scatterpolar', mode = 'lines+markers')
+
+platforms <- unique(radar_data$Platform)
+
+for (p in platforms) {
+  fig <- fig %>%
+    add_trace(
+      r = radar_data %>% filter(Platform == p) %>% pull(Scaled),
+      theta = radar_data %>% filter(Platform == p) %>% pull(Metric),
+      name = p
+    )
+}
+
+fig <- fig %>%
+  layout(
+    polar = list(radialaxis = list(visible = TRUE, range = c(0, 1))),
+    title = "Platform Comparison Across Key Metrics"
+  )
+
+fig
+```
+
+
+##### Metrics Compared
+
+- **Age**
+- **Time Spent**
+- **Self-Control**
+- **Addiction Level**
+- **Videos Watched**
+
+Each axis represents one metric, and values are scaled (normalized) so the maximum observed value for each metric equals 1.
+
+---
+
+##### Key Observations by Platform
+
+| Platform   | High in...                  | Low in...                 | Behavioral Summary                              |
+|------------|-----------------------------|---------------------------|--------------------------------------------------|
+| **Facebook**  | Time Spent                | Videos Watched, Addiction | High session time, passive engagement            |
+| **Instagram** | Videos Watched, Addiction | Self-Control           | Heavy scrollers with higher addiction risk       |
+| **TikTok**    | Self-Control, Videos Watched | Age                    | Younger audience with more control, high content volume |
+| **YouTube**   | Older Users, Balanced profile | Time Spent             | Older demographic with moderate use and control  |
+
+---
+
+##### Insights
+
+- **Instagram** shows the **highest normalized Addiction Level** and **Videos Watched**, suggesting heavy use with less regulation.
+- **TikTok** combines **high Self-Control** and **high Videos Watched**, suggesting users may binge intentionally but not compulsively.
+- **Facebook** users spend the most time but show **lower addiction**, implying passive or habitual engagement.
+- **YouTube** appears **balanced** with moderate values across most dimensions.
+
+---
+
+##### Summary
+
+- **User behavior varies significantly across platforms**, both in time use and psychological control.
+- This multidimensional view reveals trade-offs: some platforms foster longer sessions (Facebook), others higher volume (Instagram/TikTok).
+- **Addiction risk correlates more closely with Self-Control and Video Volume than Time Spent**, consistent with earlier findings.
+
+---
+
+
+
+
+<br><br>
+
+
+
+## **Statistical Analysis**
+
+<br>
+
+```{r}
+# Descriptive stats
+desc_stats <- describeBy(data[, c("Age", "Total.Time.Spent", "Video.Length", 
+                                "Number.of.Videos.Watched", "Self.Control", 
+                                "Addiction.Level")], 
+                        group = data$Platform, 
+                        mat = TRUE)
+print(desc_stats)
+
+desc_stats_df <- as.data.frame(desc_stats)
+
+desc_stats_table <- desc_stats_df %>%
+  select(group1, vars, n, mean, sd, median, min, max, skew, kurtosis) %>%
+  rename(
+    Platform = group1,
+    Variable = vars,
+    Count = n,
+    Mean = mean,
+    SD = sd,
+    Median = median,
+    Min = min,
+    Max = max,
+    Skewness = skew,
+    Kurtosis = kurtosis
+  )
+
+print("Formatted Descriptive Statistics Table:")
+print(desc_stats_table)
+```
+
+
+<br>
+
+
+```{r}
+print("Shapiro-Wilk Normality Tests:")
+shapiro_results <- data %>%
+  group_by(Platform) %>%
+  summarise(
+    Addiction_Level_SW_p = shapiro.test(Addiction.Level)$p.value,
+    Time_Spent_SW_p = shapiro.test(Total.Time.Spent)$p.value,
+    Videos_Watched_SW_p = shapiro.test(Number.of.Videos.Watched)$p.value,
+    Self_Control_SW_p = shapiro.test(Self.Control)$p.value
+  )
+print(shapiro_results)
+```
+
+#### Shapiro-Wilk Normality Test Interpretation:
+
+- All **p-values** from the Shapiro-Wilk tests are significantly **below 0.05**.
+- This indicates that **none** of the following variables are normally distributed **across any platform**:
+  - `Addiction.Level`
+  - `Total.Time.Spent`
+  - `Number.of.Videos.Watched`
+  - `Self.Control`
+
+---
+
+<br>
+
+```{r}
+colnames(data)
+```
+
+```{r}
+# Correlation analysis for numeric variables with significance testing
+numeric_data <- data %>% select(Age, Total.Time.Spent,
+                                Video.Length,
+                                Number.of.Videos.Watched,
+                                Self.Control, 
+                                Addiction.Level, 
+                                Total.Time.Spent)
+
+
+correlation_matrix <- cor(numeric_data, use = "complete.obs")
+print("Correlation Matrix:")
+print(correlation_matrix)
+```
+
+
+```{r}
+# Function to calculate p-values for correlations
+cor.mtest <- function(mat, conf.level = 0.95) {
+  mat <- as.matrix(mat)
+  n <- ncol(mat)
+  p.mat <- matrix(NA, n, n)
+  diag(p.mat) <- 0
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      test <- cor.test(mat[, i], mat[, j], conf.level = conf.level)
+      p.mat[i, j] <- p.mat[j, i] <- test$p.value
+    }
+  }
+  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
+  return(p.mat)
+}
+
+# Compute p-values
+p_values <- cor.mtest(numeric_data)
+
+corrplot(
+  correlation_matrix,
+  method = "color",
+  type = "upper",
+  addCoef.col = "black",     # Show correlation coefficients
+  tl.col = "black",          # Label color
+  tl.cex = 0.8,              # Label size
+  number.cex = 0.7,          # Coefficient size
+  col = colorRampPalette(c("red", "white", "blue"))(200),
+  mar = c(0, 0, 1, 0),
+  
+  # Show all correlations regardless of significance
+  p.mat = p_values,
+  sig.level = 0.05,
+  insig = "n",              # ⬅️ This ensures NOTHING is hidden or crossed
+  title = "Correlation Matrix of Numeric Variables with Significance",
+)
+
+```
+
+#### Correlation Matrix of Numeric Variables with Significance
+
+This section visualizes the pairwise relationships between key numeric variables such as `Age`, `Total Time Spent`, `Video Length`, `Number of Videos Watched`, `Self-Control`, `Addiction Level`, and `Hour`. The Pearson correlation coefficient is used to measure linear relationships, and all correlations are displayed regardless of significance.
+
+---
+
+##### Methods Used
+
+- **Pearson correlation** (`cor()`) was used to compute pairwise relationships.
+- **Significance testing** was conducted using `cor.test()` for each variable pair.
+- A matrix of **p-values** (`p.mat`) was passed to `corrplot()` using `sig.level = 0.05`.
+- All correlation values are displayed using `insig = "n"` to retain insignificant results.
+
+---
+
+##### Visual Design Notes
+
+- **Color intensity** indicates the **strength and direction** of correlation:
+  - Blue = Positive correlation
+  - Red = Negative correlation
+- **Correlation values** are shown in each cell.
+- **Diagonal = 1.00**: Perfect self-correlation.
+- No blank or crossed cells: all values are shown regardless of p-value.
+
+---
+
+##### Summary of Correlation Strengths
+
+| Variable Pair                        | Correlation (r) |
+|-------------------------------------|------------------|
+| **Self.Control vs Addiction.Level** | **-0.95**        |
+| **Self.Control vs Hour**            | -0.57            |
+| **Addiction.Level vs Hour**         | 0.59             |
+| **Video.Length vs Number.of.Videos.Watched** | 0.11     |
+| **Video.Length vs Self.Control**    | -0.13            |
+| **Video.Length vs Addiction.Level** | -0.15            |
+| All others                          | |r| < 0.10        |
+|                                     |                   |
+
+> Note: While some correlations are moderate to strong (e.g., -0.95), many others are weak (< ±0.1), even if visually noticeable.
+
+---
+
+##### Interpretation
+
+- The strongest and most meaningful correlation is between **Self-Control and Addiction Level** (**r = -0.95**), indicating a **strong negative relationship**. Users with lower self-control scores report significantly higher addiction levels.
+
+- **Hour of Use** (time of day when users most engage) has:
+  - A **moderate negative correlation** with Self-Control (**r = -0.57**).
+  - A **moderate positive correlation** with Addiction Level (**r = 0.59**).
+
+- **Video Length** shows:
+  - A mild **positive correlation** with Number of Videos Watched (**r = 0.11**).
+  - Mild **negative correlations** with both Self-Control and Addiction Level.
+
+- **Age**, **Total Time Spent**, and **Number of Videos Watched** show **minimal correlations**, suggesting they are not strong individual predictors of addictive behavior.
+
+---
+
+##### Conclusion
+
+- **Self-Control** emerges as the **strongest psychological predictor** of addiction.
+- Time of day (Hour) contributes modestly to the addiction profile.
+- High usage does not equate to high addiction — **psychological traits matter more than quantity alone**.
+
+---
+
+<br>
+
+#### **Simple Linear Regression: Self Control vs Addiction Level by Platform**
+
+```{r}
+scatter_regression <- ggplot(data, aes(x = Self.Control, y = Addiction.Level, color = Platform)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = TRUE) +
+  facet_wrap(~ Platform, scales = "free") +
+  scale_color_viridis_d() +
+  labs(title = "Self Control vs Addiction Level by Platform",
+       subtitle = "With linear regression lines and 95% confidence intervals",
+       x = "Self Control",
+       y = "Addiction Level") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "none"
+  )
+
+print(scatter_regression)
+```
+
+#### Self-Control vs Addiction Level by Platform
+
+This section visualizes the relationship between **Self-Control** and **Addiction Level** across four major social media platforms: Facebook, Instagram, TikTok, and YouTube. Each subplot includes a **linear regression line** with **95% confidence intervals**, helping to assess the strength and consistency of the inverse relationship.
+
+---
+
+##### Methods Used
+
+- A **linear regression model** was fitted for each platform to predict `Addiction Level` from `Self-Control`.
+- **95% confidence intervals** are shown to illustrate the uncertainty around the regression line.
+
+---
+
+##### Interpretation
+
+- Across **all four platforms**, there is a clear **negative linear relationship** between Self-Control and Addiction Level:
+  - Users with **higher self-control consistently report lower addiction scores**.
+
+---
+
+##### Conclusion
+
+This multi-platform analysis reinforces the central finding:  
+> **Higher self-control is associated with lower reported addiction levels on all platforms.**
+
+While some platforms (like YouTube) show slightly more variability, the **inverse relationship is consistent**, suggesting that **self-regulation is a key predictor of social media addiction**, regardless of the specific platform in use.
+
+---
+
+<br><br>
+
+
+
+```{r}
+platform_reason_table <- table(data$Platform, data$Watch.Reason)
+print("Contingency Table - Platform by Watch Reason:")
+print(platform_reason_table)
+```
+
+
+This analysis examines whether the **choice of social media platform** is **independent** of the **user’s reason for watching**.
+
+---
+
+#####  Interpretation
+
+- **Habit** is the most commonly cited reason across all platforms:
+  - Instagram (81), Facebook (71), TikTok (72), YouTube (65)
+- **Entertainment** is highly reported for **TikTok (72)** and **YouTube (66)**
+- **Boredom** is notably high for Instagram (65) and TikTok (60)
+- **Procrastination** is least common, though slightly higher for Instagram and YouTube
+
+#####  Insight:
+
+These differences suggest that **user motivations vary meaningfully by platform**:
+- **TikTok** may be more **entertainment-driven**
+- **Instagram and Facebook** usage skews toward **habitual** and **boredom-induced**
+- **YouTube** usage is more **balanced**, likely due to its mixed content styles
+
+---
+
+<br>
+
+
+```{r}
+chi_test_platform_reason <- chisq.test(platform_reason_table)
+print("Chi-square test for Platform and Watch Reason:")
+print(chi_test_platform_reason)
+```
+
+#### Chi-Square Test Result: Platform vs. Watch Reason
+
+This test evaluates whether the **type of platform** used is **associated with the user's reason for watching** (e.g., boredom, entertainment, habit, procrastination).
+
+#####  Interpretation
+
+- **p-value = 0.2917 > 0.05**  
+  → The result is **not statistically significant** at the 5% level.
+
+- This means there is **no strong evidence** to reject the null hypothesis that **Platform** and **Watch Reason** are independent.
+- There is no significant association between **Platform** and **Watch Reason**.
+
+---
+
+<br>
+
+```{r}
+platform_category_table <- table(data$Platform, data$Video.Category)
+print("Contingency Table - Platform by Video Category:")
+print(platform_category_table)
+```
+
+```{r}
+chi_test_platform_category <- chisq.test(platform_category_table)
+print("Chi-square test for Platform and Video Category:")
+print(chi_test_platform_category)
+```
+
+#### Chi-Square Test Result: Platform vs. Video Category
+
+This test examines whether there is a **significant relationship** between the **social media platform** used and the **type of video content** consumed (e.g., Gaming, Vlogs, Memes).
+
+---
+
+#####  Interpretation
+
+- **p-value = 0.842 > 0.05**  
+  → The result is **not statistically significant**.
+
+- This indicates that there is **no strong evidence** to reject the null hypothesis that **Platform** and **Video Category** are **independent**.
+- There is **no significant association** between **platform** and **video category**.
+
+---
+
+<br>
+
+
+```{r}
+gender_platform_table <- table(data$Gender_fixed, data$Platform)
+print("Contingency Table - Gender by Platform:")
+print(gender_platform_table)
+```
+
+```{r}
+chi_test_gender_platform <- chisq.test(gender_platform_table)
+print("Chi-square test for Gender and Platform:")
+print(chi_test_gender_platform)
+```
+
+#### Chi-Square Test Result: Gender vs. Platform
+
+This test assesses whether there is a **statistically significant association** between a user's **gender** and their **preferred social media platform**.
+
+---
+
+#####  Interpretation
+
+- **p-value = 0.6485 > 0.05**  
+  → The test is **not statistically significant**.
+
+- This means there is **no sufficient evidence** to suggest that platform preference is influenced by gender in this dataset.
+
+---
+
+<br>
+
+
+```{r}
+levene_test_result <- leveneTest(Addiction.Level ~ Platform, data = data)
+print("Levene's Test for Homogeneity of Variance:")
+print(levene_test_result)
+```
+
+####  Levene’s Test: Homogeneity of Variance (Addiction Level by Platform)
+
+Before performing an ANOVA, it's essential to check whether the assumption of **homogeneity of variance** (equal variances across groups) is met. This is tested using **Levene’s Test**.
+
+---
+
+
+##### Interpretation
+
+- **p-value = 0.3292 > 0.05**  
+  → The result is **not statistically significant**.
+
+- This means we **fail to reject** the null hypothesis of equal variances. Therefore, the assumption of **homogeneity of variance is satisfied**.
+
+---
+
+##### Conclusion
+
+- The assumption required to proceed with a **one-way ANOVA** (equal variances across groups) **holds true** for the variable `Addiction.Level` grouped by `Platform`.
+- You can **safely proceed with ANOVA** to test for differences in mean addiction levels across platforms.
+
+---
+
+<br>
+
+```{r}
+two_way_anova <- aov(Addiction.Level ~ Platform * Gender_fixed, data = data)
+print("Two-way ANOVA: Platform and Gender on Addiction Level")
+print(summary(two_way_anova))
+```
+
+#### Two-Way ANOVA: Platform × Gender → Addiction Level
+
+This two-way ANOVA evaluates whether **Addiction Level** is significantly affected by:
+1. **Platform** (Facebook, Instagram, TikTok, YouTube)
+2. **Gender** (via `Gender_fixed`)
+3. The **interaction** between Platform and Gender
+
+---
+
+##### Interpretation
+
+- **Platform effect**: p = **0.969**  
+  → No significant difference in mean Addiction Level across platforms.
+
+- **Gender effect**: p = **0.576**  
+  → No significant difference in Addiction Level between genders.
+
+- **Interaction effect (Platform × Gender)**: p = **0.706**  
+  → No significant combined effect of Platform and Gender on Addiction Level.
+
+---
+
+##### Insight
+
+Despite previous visual trends (e.g., higher addiction on Instagram, differences by gender), this statistical test indicates that:
+
+- These differences are **not statistically significant** at the 0.05 level.
+- Mean Addiction Levels are **statistically similar** across all platform-gender combinations.
+
+---
+
+<br>
+
+
+```{r}
+levene_test_gender <- leveneTest(Addiction.Level ~ Gender_fixed, data = data)
+print("Levene's Test for Homogeneity of Variance (Gender):")
+print(levene_test_gender)
+```
+
+```{r}
+# Perform t-test with appropriate method based on variance equality
+if (levene_test_gender$`Pr(>F)`[1] < 0.05) {
+  # Unequal variances
+  t_test_result <- t.test(Addiction.Level ~ Gender_fixed, data = data, var.equal = FALSE)
+  print("Welch's T-test for Addiction Level by Gender (unequal variances):")
+} else {
+  # Equal variances
+  t_test_result <- t.test(Addiction.Level ~ Gender_fixed, data = data, var.equal = TRUE)
+  print("Student's T-test for Addiction Level by Gender (equal variances):")
+}
+```
+
+#### Gender Differences in Addiction Level (T-Test Analysis)
+
+This section investigates whether **Addiction Level** differs significantly between **males and females**, using a **two-sample t-test**.
+
+---
+
+#### Assumption Check: Levene’s Test for Homogeneity of Variance
+
+- **p = 0.176 > 0.05**  
+  → Variances between groups are **not significantly different**, so **Student's t-test** (equal variances assumed) is appropriate.
+
+---
+
+<br>
+
+```{r}
+print(t_test_result)
+```
+
+```{r}
+# effect size for t-test (Cohen's d)
+cohens_d <- cohens_d(Addiction.Level ~ Gender_fixed, data = data)
+print("Effect Size (Cohen's d) for Gender Difference:")
+print(cohens_d)
+```
+
+#### Effect Size (Cohen’s d)
+
+- A **Cohen's d of -0.04** indicates a **very small, negligible effect size**.
+
+#### Interpretation: 
+
+The difference in Addiction Level between females and males is **not meaningful in practical terms**.
+
+---
+
+<br>
+
+```{r}
+gender_boxplot <- ggplot(data, aes(x = Gender_fixed, y = Addiction.Level, fill = Gender_fixed)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2, alpha = 0.2) +
+  labs(title = "Addiction Level by Gender",
+       subtitle = paste("p-value =", round(t_test_result$p.value, 3),
+                       ", Cohen's d =", round(cohens_d$Cohens_d, 2)),
+       y = "Addiction Level") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5))
+
+print(gender_boxplot)
+```
+
+
+##### Boxplot of Addiction Level by Gender
+
+The plot shows:
+- **Nearly identical median values** for males and females.
+- Similar spread (IQR) and distribution.
+- No visible difference in central tendency or spread.
+
+---
+
+<br>
+
+#### **Summary**:
+
+- No statistically significant difference in Addiction Level between genders (p = 0.578)
+- Effect size is trivial (Cohen’s d = -0.04)
+- Gender does **not meaningfully influence** addiction level in this dataset
+
+---
+
+
+<br><br>
+
+
+#### **Multiple Linear Regression: Predicting Addiction Level**
+
+This regression model aims to predict users' **Addiction Level** based on demographic, behavioral, and platform-related variables.
+
+```{r}
+# Multiple linear regression model to predict Addiction Level
+# Create a basic model first
+basic_model <- lm(Addiction.Level ~ Age + Gender_fixed + Total.Time.Spent + 
+                 Number.of.Videos.Watched + Self.Control + Platform, 
+                data = data)
+
+print("Basic Linear Regression Model:")
+print(summary(basic_model))
+```
+
+#### Interpretation:
+The model explains approximately 91% of the variance in Addiction Level — a strong fit. The overall model is highly significant (p < 0.001), suggesting it effectively captures key predictors.
+
+---
+
+<br>
+
+```{r}
+# Checking for multicollinearity
+vif_values <- vif(basic_model)
+print("Variance Inflation Factors (check for multicollinearity):")
+print(vif_values)
+```
+
+#### Multicollinearity Check: Variance Inflation Factors (VIF)
+
+Before trusting a regression model’s coefficients, it’s essential to check for **multicollinearity**—when predictor variables are highly correlated with one another, which can distort estimates.
+
+---
+
+##### Conclusion
+
+- **No multicollinearity detected** among predictors.
+- ✔Coefficient estimates in the regression model are **stable and reliable**.
+- This confirms the **independence of predictors**, ensuring valid interpretation of effects in the linear regression model.
+
+---
+
+<br>
+
+
+```{r}
+# Stepwise regression to find the best model
+step_model <- step(basic_model, direction = "both")
+print("Stepwise Model Selection Results:")
+print(summary(step_model))
+```
+
+#### Stepwise Regression: Optimal Model for Predicting Addiction Level
+
+Stepwise regression (with both forward and backward selection) was used to identify the **most parsimonious** model for predicting **Addiction Level** while maximizing explanatory power.
+
+---
+
+##### Final Selected Model:
+
+Addiction.Level ~ Age + Total.Time.Spent + Number.of.Videos.Watched + Self.Control
+
+---
+
+##### Conclusion
+
+- The stepwise regression confirms that:
+  - A lean 4-variable model is sufficient to explain over 91% of Addiction Level variance.
+  - Self-Control is the most impactful predictor.
+  - Platform and Gender are unnecessary once core behavior and psychology are accounted for.
+
+---
+
+<br>
+
+```{r}
+# Residual diagnostics for final model
+par(mfrow = c(2, 2))
+plot(step_model)
+par(mfrow = c(1, 1))
+```
+
+#### Regression Diagnostics for Final Model
+
+To ensure that the assumptions of linear regression are satisfied, four standard diagnostic plots of the residuals from the final model are analyzed.
+
+---
+
+##### Conclusion
+
+- **Linearity** and **normality** assumptions are mostly satisfied.
+- Minor **heteroscedasticity** is visible, but not severe enough to invalidate the model.
+- No extreme leverage points or outliers require immediate removal.
+- Overall, the model is **statistically sound**, and diagnostics support the reliability of your inference.
+
+---
+
+<br>
+
+
+```{r}
+# Test for heteroscedasticity
+bp_test <- bptest(step_model)
+print("Breusch-Pagan Test for Heteroscedasticity:")
+print(bp_test)
+```
+
+#### Breusch-Pagan Test for Heteroscedasticity
+
+This test evaluates whether the **residuals from the regression model** have **constant variance** — a key assumption in linear regression. Violating this (i.e., heteroscedasticity) can affect the validity of coefficient estimates and their standard errors.
+
+---
+
+##### Interpretation
+
+- **p-value = 1.95 × 10⁻⁹ < 0.05**  
+  → The result is **highly significant**.
+
+- This means we **reject the null hypothesis** of **homoscedasticity** (constant variance of residuals).
+
+- Therefore, the model exhibits **heteroscedasticity** — the **variance of errors is not constant** across all levels of fitted values.
+
+---
+
+<br>
+
+```{r}
+# Calculate robust standard errors using HC1 estimator
+robust_se <- vcovHC(step_model, type = "HC1")
+
+# Recalculate coefficient tests with robust SEs
+robust_coeftest <- coeftest(step_model, vcov. = robust_se)
+
+print("Robust Coefficient Estimates (with HC1-adjusted standard errors):")
+print(robust_coeftest)
+```
+
+
+- This provides more reliable inference (p-values, confidence intervals) when residuals are heteroscedastic.
+
+---
+
+<br>
+
+```{r}
+# Adding predicted values to the dataset
+data$Predicted <- predict(step_model)
+
+# Plot: Actual vs. Predicted
+ggplot(data, aes(x = Predicted, y = Addiction.Level)) +
+  geom_point(alpha = 0.4, color = "steelblue") +
+  geom_smooth(method = "lm", color = "red", se = FALSE, linetype = "dashed") +
+  geom_abline(intercept = 0, slope = 1, linetype = "solid", color = "black") +
+  labs(title = "Model Fit: Predicted vs. Actual Addiction Level",
+       subtitle = "Dashed = Linear Trend | Solid = Perfect Fit Line",
+       x = "Predicted Addiction Level",
+       y = "Actual Addiction Level") +
+  theme_minimal()
+```
+
+#### Model Fit Visualization: Predicted vs. Actual Addiction Level
+
+This section presents a visual evaluation of the model’s predictive performance by plotting the **predicted values** against the **actual observed Addiction Level** values.
+
+---
+
+#### Visual Observations
+
+- Each point represents a participant’s actual and predicted addiction level.
+- The black solid line represents perfect predictions (i.e., actual = predicted).
+- The red dashed line shows the linear trend of actual vs. predicted values.
+- Most points fall tightly around the perfect-fit line, indicating strong agreement between model predictions and actual values.
+- A few outliers deviate above or below the trend, particularly at higher predicted values, but they are not widespread.
+
+---
+
+#### Statistical Context
+
+- The model explains **over 91% of the variation** in Addiction Level, demonstrating **excellent fit**.
+- Residual errors are small and randomly scattered.
+- Predictions closely align with real outcomes for most cases.
+
+---
+
+<br><br>
+
+
+### Time Series Visualization
+
+```{r}
+# Extract Hour of Day from Watch.Time
+hourly_data <- data %>%
+  mutate(Hour = hour(hms(Watch.Time))) %>% 
+  count(Hour, Platform)
+
+interactive_hourly <- plot_ly(
+  data = hourly_data,
+  x = ~Hour,
+  y = ~n,
+  color = ~Platform,
+  type = 'scatter',
+  mode = 'lines+markers',
+  line = list(width = 2),
+  marker = list(size = 7, line = list(width = 1, color = 'black')),
+  text = ~paste("Platform:", Platform,
+                "<br>Hour:", Hour,
+                "<br>Users:", n),
+  hoverinfo = 'text'
+) %>%
+  layout(
+    title = list(
+      text = "<b>Video Watching Patterns by Hour of Day</b>",
+      x = 0.5
+    ),
+    xaxis = list(
+      title = "<b>Hour of Day</b>",
+      tickmode = "array",
+      tickvals = seq(0, 23, 2),
+      ticktext = paste0(seq(0, 23, 2), ":00"),
+      range = c(0, 23),
+      dtick = 2
+    ),
+    yaxis = list(title = "<b>Number of Users</b>", rangemode = "tozero"),
+    legend = list(title = list(text = "<b>Platform</b>")),
+    hovermode = "closest"
+  )
+
+interactive_hourly
+```
+
+
+#### Video Watching Patterns by Hour of Day
+
+This interactive time series chart illustrates how user activity on different platforms varies throughout the day.
+
+---
+
+##### Key Observations:
+
+- **Peak usage occurs around 14:00 to 16:00** (2 PM to 4 PM) across **all platforms**, suggesting high mid-afternoon engagement — possibly during school/work breaks or early leisure hours.
+- A **secondary peak emerges around 21:00–22:00**, especially for **Instagram and Facebook**, indicating strong nighttime activity, potentially before sleep.
+- **TikTok and YouTube** show relatively smoother curves with **sustained engagement between 10:00 and 18:00**, reflecting continuous consumption.
+- **Early morning usage (before 8:00)** is minimal across all platforms, while **Facebook and Instagram** pick up slightly earlier than TikTok and YouTube.
+
+---
+
+##### Summary:
+
+- Viewing behavior clearly follows **daily routines**, with sharp increases during free-time windows (afternoon and night).
+- Platforms like **Instagram and Facebook** dominate evening spikes, while **TikTok and YouTube** thrive during longer daytime stretches.
+- This time-of-day pattern can help inform **posting strategies, notification timing, and algorithm tuning** for platform designers and marketers.
+
+---
+
+
+
+<br>
+
+
+### Geo-Spacial Visualization
+
+
+```{r}
+data$Location <- as.character(data$Location)
+
+# Fix known typos
+data$Location[data$Location == "Barzil"] <- "Brazil"
+data$Location[data$Location == "Sri Lankan"] <- "Sri Lanka"
+
+# Standardize country names
+data$Country_Standardized <- countrycode(data$Location, "country.name", "country.name")
+
+# summary by location
+location_summary <- data %>%
+  filter(!is.na(Location)) %>%   # filter out NA values
+  group_by(Location) %>%
+  summarise(
+    Count = n(),
+    Avg_Addiction = mean(Addiction.Level, na.rm = TRUE),
+    Avg_Time_Spent = mean(Total.Time.Spent, na.rm = TRUE),
+    Most_Popular_Platform = names(which.max(table(Platform)))
+  )
+print(location_summary)
+```
+
+```{r}
+location_mapping <- data.frame(
+  dataset_name = unique(data$Location),
+  map_name = unique(data$Location),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+# complete list of countries
+all_countries <- data.frame(
+  country = unique(countrycode::codelist$country.name.en),
+  stringsAsFactors = FALSE
+)
+
+# Summarize the data
+location_summary <- data %>%
+  group_by(Location) %>%
+  summarise(Avg_Addiction = mean(Addiction.Level, na.rm = TRUE)) %>%
+  rename(country = Location)
+
+# Merge with the full country list
+world_map_data <- all_countries %>%
+  left_join(location_summary, by = "country") %>%
+  rename(value = Avg_Addiction)
+
+# choropleth plot
+fig <- plot_geo(world_map_data)
+
+fig <- fig %>%
+  add_trace(
+    locations = ~country,
+    locationmode = 'country names',
+    z = ~value,
+    text = ~paste("Country:", country, "<br>Avg Addiction:", round(value, 2)),
+    type = 'choropleth',
+    colorscale = 'Plasma',
+    zmin = 0,
+    zmax = 10,
+    colorbar = list(title = "Addiction Level"),
+    showscale = TRUE
+  ) %>%
+  layout(
+    title = list(
+      text = "Global View: Average Social Media Addiction Level by Country",
+      x = 0.5
+    ),
+    geo = list(
+      showframe = FALSE,
+      showcoastlines = TRUE,
+      projection = list(type = 'equirectangular')
+    )
+  )
+fig
+```
+
+
+##### Insights
+
+- **Sri Lanka** has the **highest average addiction level** at **5.57**, significantly above all other countries. This could indicate a region of concern or culturally distinct usage patterns.
+- **Germany** and the **United States** both show **moderate addiction levels** around **3.06–3.12**, with **Instagram** and **YouTube** as top platforms.
+- **India**, **Mexico**, **Indonesia**, and the **Philippines** fall in the **mid-range (2.8–3.0)**, with TikTok and Facebook being dominant platforms. This may reflect youth-driven trends or time-killing behavior.
+- **Japan**, **Vietnam**, and **Pakistan** display **lower addiction levels (2.5–2.7)**, possibly suggesting more restrained or passive social media use.
+- **TikTok** is the most popular platform in multiple countries (**India**, **Japan**, **Philippines**), highlighting its global appeal among younger users.
+- **YouTube** and **Instagram** dominate in countries with both high and low addiction, suggesting broad but differently motivated usage patterns.
+
+---
+
+##### Summary
+
+- The map reveals **geographically diverse patterns** in social media addiction.
+- **Sri Lanka stands out as an outlier**, potentially due to cultural, infrastructural, or psychological factors worth exploring.
+- **No region uniformly scores high or low**, suggesting that **platform popularity does not always correlate with addiction level**.
+
+---
+
+<br><br>
+
+
+
+
+## **Conclusion**
+
+<br>
+
+This project provided a detailed analysis of social media usage behavior, focusing on time-wasting patterns and addiction levels. Through data visualization and statistical techniques, several meaningful insights emerged.
+
+---
+
+#### *Key Findings & Observations:*
+
+- **Instagram and TikTok** were the most actively used platforms, particularly among younger users, with **Facebook** trailing in popularity.
+- A **non-linear relationship between time spent and addiction** was identified. Some users with moderate usage exhibited high addiction, highlighting the role of **platform design and psychological factors**.
+- **Self-Control** demonstrated a **strong inverse correlation with Addiction Level** — lower self-control consistently aligned with higher addiction scores.
+- The **type of content** influenced addiction significantly:
+  - **YouTube + Vlogs** and **Instagram + Trends** showed the **highest addiction scores**.
+  - **ASMR** and **Jokes/Memes** appeared to have **lower addiction levels**, suggesting they may be used for relaxation or light entertainment.
+- **Peak usage times** occurred at **2–4 PM** and **9–10 PM**, aligning with daily routines such as breaks and bedtime scrolling.
+- **Habit** was the most cited motivation for social media use, followed by **entertainment** and **boredom**.
+
+---
+
+#### *Statistical Insights:*
+
+- **Linear and multiple regression models** showed addiction level could be **moderately predicted** using variables like time spent and self-control.
+- **3D scatter plots** and **heatmaps** confirmed that addiction is shaped by a mix of **behavioral, psychological, and content-related factors**.
+- **Regression R² values (~30–40%)** indicate that while predictive models are informative, there are additional latent variables influencing addiction.
+
+---
+
+#### *Interpretation:*
+
+- **Addiction is not purely time-based** — psychological traits (e.g., self-control) and platform-content synergy play a critical role.
+- The **habitual nature** of social media use suggests that many users engage unconsciously, reinforcing the "swipe-scroll-repeat" cycle.
+- **Content types** with personal or viral appeal (e.g., Vlogs, Trends) tend to foster stronger attachment and repeated use.
+
+---
+
+#### *Limitations:*
+
+- The dataset is **self-reported**, introducing potential bias.
+- **Demographic imbalance** (e.g., age, gender) limits generalizability.
+- The analysis is **cross-sectional**, not capturing behavioral trends over time.
+
+---
+
+#### *Recommendations & Future Work:*
+
+- Develop **behavioral interventions** (e.g., screen time alerts) informed by peak usage hours and high-risk content types.
+- Conduct **longitudinal studies** to observe changes in addiction behavior over time.
+- Expand datasets to include **more diverse populations** for broader insight.
+- Explore **machine learning classifiers** for early identification of at-risk users.
+- Promote **digital wellness programs**, particularly targeting youth demographics.
+
+<br>
+
+---
+
+<br><br><br>
+
+
